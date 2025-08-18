@@ -2,7 +2,7 @@ package application;
 
 import java.util.List;
 
-import pojos.TelementryData;
+import pojos.TelemetryData;
 import service.AlertMessageService;
 
 public class TelemetryAlertsMain {
@@ -14,9 +14,9 @@ public class TelemetryAlertsMain {
 
 		List<String> alerts = alertService.getInputMessage();
 
-		List<TelementryData> telementryData = alertService.getTelementryData(alerts);
+		List<TelemetryData> telemetryData = alertService.getTelemetryData(alerts);
 
-		List<List<TelementryData>> violationsLists = alertService.generateViolationsMessages(telementryData);
+		List<List<TelemetryData>> violationsLists = alertService.generateViolationsMessages(telemetryData);
 
 		alertService.createAlertMessages(violationsLists);
 	}

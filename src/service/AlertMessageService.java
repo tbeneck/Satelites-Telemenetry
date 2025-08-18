@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import pojos.TelementryData;
+import pojos.TelemetryData;
 import util.Utils;
 
 public class AlertMessageService {
@@ -48,11 +48,11 @@ public class AlertMessageService {
 	}
 
 	// Create List of Telemetry Data Objects
-	public List<TelementryData> getTelementryData(List<String> inputSignals) {
+	public List<TelemetryData> getTelemetryData(List<String> inputSignals) {
 
-		List<TelementryData> telementryDataList = new ArrayList<TelementryData>();
+		List<TelemetryData> telemetryDataList = new ArrayList<TelemetryData>();
 		for (int i = 0; i < inputSignals.size(); i++) {
-			// Split line on each | for each TelementryData Field
+			// Split line on each | for each TelemetryData Field
 			String[] lines = inputSignals.get(i).split("\\|");
 
 			String timestamp = lines[0];
@@ -66,35 +66,35 @@ public class AlertMessageService {
 
 			// Constructor to create telemetry data object using the constructor
 			// from the input
-			TelementryData telementryData = new TelementryData(timestamp, sateliteId, redHighLimit, yellowHighLimit,
+			TelemetryData telemetryData = new TelemetryData(timestamp, sateliteId, redHighLimit, yellowHighLimit,
 					yellowLowLimit, redLowLimit, rawValue, component);
 
-			telementryDataList.add(telementryData);
+			telemetryDataList.add(telemetryData);
 		}
-		return telementryDataList;
+		return telemetryDataList;
 	}
 
 	// Generate out bound violation messages for each satellite
-	public List<List<TelementryData>> generateViolationsMessages(List<TelementryData> telementryData) {
+	public List<List<TelemetryData>> generateViolationsMessages(List<TelemetryData> telemetryData) {
 
 		// Create two seperate lists for each satellite of type telemetry data
-		List<TelementryData> satelliteOneList = new ArrayList<TelementryData>();
-		List<TelementryData> satelliteTwoList = new ArrayList<TelementryData>();
+		List<TelemetryData> satelliteOneList = new ArrayList<TelemetryData>();
+		List<TelemetryData> satelliteTwoList = new ArrayList<TelemetryData>();
 
 		// Satellite one violations
-		List<TelementryData> satelliteOneLowViolations = new ArrayList<TelementryData>(); // size zero
-		List<TelementryData> satelliteOneHighViolations = new ArrayList<TelementryData>(); // size zero
+		List<TelemetryData> satelliteOneLowViolations = new ArrayList<TelemetryData>(); // size zero
+		List<TelemetryData> satelliteOneHighViolations = new ArrayList<TelemetryData>(); // size zero
 
 		// Satellite two violations
-		List<TelementryData> satelliteTwoLowViolations = new ArrayList<TelementryData>(); // size 3
-		List<TelementryData> satelliteTwoHighViolations = new ArrayList<TelementryData>(); // size 3
+		List<TelemetryData> satelliteTwoLowViolations = new ArrayList<TelemetryData>(); // size 3
+		List<TelemetryData> satelliteTwoHighViolations = new ArrayList<TelemetryData>(); // size 3
 
-		for (int i = 0; i < telementryData.size(); i++) {
-			int satelliteId = telementryData.get(i).getSatelliteId();
+		for (int i = 0; i < telemetryData.size(); i++) {
+			int satelliteId = telemetryData.get(i).getSatelliteId();
 			if (satelliteId == 1001) {
-				satelliteOneList.add(telementryData.get(i));
+				satelliteOneList.add(telemetryData.get(i));
 			} else {
-				satelliteTwoList.add(telementryData.get(i));
+				satelliteTwoList.add(telemetryData.get(i));
 			}
 		}
 
@@ -119,7 +119,7 @@ public class AlertMessageService {
 			}
 		}
 		// Return violations List of Lists for both satellites
-		List<List<TelementryData>> violationsList = new ArrayList<List<TelementryData>>();
+		List<List<TelemetryData>> violationsList = new ArrayList<List<TelemetryData>>();
 		violationsList.add(satelliteOneLowViolations);
 		violationsList.add(satelliteOneHighViolations);
 		violationsList.add(satelliteTwoHighViolations);
@@ -129,7 +129,7 @@ public class AlertMessageService {
 	}
 
 	// Create alert messages from Violations Lists
-	public void createAlertMessages(List<List<TelementryData>> violationsLists) {
+	public void createAlertMessages(List<List<TelemetryData>> violationsLists) {
 		JSONArray jsonArray = new JSONArray();
 
 		int satelliteOneLowViolationsCount = violationsLists.get(0).size(); // Satellite One Low Violations

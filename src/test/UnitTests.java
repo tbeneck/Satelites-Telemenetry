@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import pojos.TelementryData;
+import pojos.TelemetryData;
 import service.AlertMessageService;
 import util.Utils;
 
@@ -71,18 +71,18 @@ public class UnitTests {
 	@Test
 	public void testViolationMessages() {
 
-		TelementryData telementryData = new TelementryData("20180101 23:05:07.421", 1002, 120, 80, 80, 120, 44.5,
+		TelemetryData telemetryData = new TelemetryData("20180101 23:05:07.421", 1002, 120, 80, 80, 120, 44.5,
 				"TSAT");
 
-		TelementryData telementryData2 = new TelementryData("20180101 23:06:07.421", 1003, 121, 81, 81, 121, 44.7,
+		TelemetryData telemetryData2 = new TelemetryData("20180101 23:06:07.421", 1003, 121, 81, 81, 121, 44.7,
 				"BTT");
 
-		ArrayList<TelementryData> telementryDataList = new ArrayList<TelementryData>();
+		ArrayList<TelemetryData> telemetryDataList = new ArrayList<TelemetryData>();
 
-		telementryDataList.add(telementryData);
-		telementryDataList.add(telementryData2);
+		telemetryDataList.add(telemetryData);
+		telemetryDataList.add(telemetryData2);
 
-		ams.generateViolationsMessages(telementryDataList);
+		ams.generateViolationsMessages(telemetryDataList);
 
 	}
 
