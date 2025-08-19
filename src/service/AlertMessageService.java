@@ -36,14 +36,14 @@ public class AlertMessageService {
 		// Relative path so it is compatible on repository
 		File currentDir = new File("");
 		String currentDirString = currentDir.getAbsolutePath();
-		//String path = currentDirString + "/telemetry input/telemetry data.txt";
+		String path = currentDirString + "/telemetry input/telemetry data.txt";
 		
 			//Custom Inputs
 			//String path = currentDirString + "/telemetry custom input/custom telemetry data.txt";
 	//		String path = currentDirString + "/telemetry custom input/custom telemetry data2.txt";
 	//		String path = currentDirString + "/telemetry custom input/custom telemetry data3.txt";
 	//	String path = currentDirString + "/telemetry custom input/custom telemetry data4.txt";
-			String path = currentDirString + "/telemetry custom input/custom telemetry data5.txt";
+			//String path = currentDirString + "/telemetry custom input/custom telemetry data5.txt";
 
 		path = path.replaceAll("\\\\", "/");
 
