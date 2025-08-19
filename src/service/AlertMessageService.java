@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,6 +22,12 @@ public class AlertMessageService {
 
 	Utils utils = new Utils();
 
+	int[] uniqueSatelliteIds;
+
+	int satelliteIdOne;
+
+	int satelliteIdTwo;
+
 	// Get all input message lines
 	public List<String> getInputMessage() {
 
@@ -29,9 +37,13 @@ public class AlertMessageService {
 		File currentDir = new File("");
 		String currentDirString = currentDir.getAbsolutePath();
 		String path = currentDirString + "/input/input.txt";
-
-		// custominputdatapath
-		// String path = currentDirString + "/custominput/inputcustom.txt";
+		
+			//Custom Inputs
+	//		String path = currentDirString + "/custominput/inputcustom.txt";
+	//		String path = currentDirString + "/custominput/inputcustom2.txt";
+	//		String path = currentDirString + "/custominput/inputcustom3.txt";
+	//		String path = currentDirString + "/custominput/inputcustom4.txt";
+	//		String path = currentDirString + "/custominput/inputcustom5.txt";
 
 		path = path.replaceAll("\\\\", "/");
 
@@ -50,13 +62,16 @@ public class AlertMessageService {
 	// Create List of Telemetry Data Objects
 	public List<TelemetryData> getTelemetryData(List<String> inputSignals) {
 
+		int[] satelliteIds = new int[inputSignals.size()];
 		List<TelemetryData> telemetryDataList = new ArrayList<TelemetryData>();
 		for (int i = 0; i < inputSignals.size(); i++) {
+
 			// Split line on each | for each TelemetryData Field
 			String[] lines = inputSignals.get(i).split("\\|");
 
 			String timestamp = lines[0];
 			int sateliteId = Integer.parseInt(lines[1]);
+			satelliteIds[i] = sateliteId;
 			int redHighLimit = Integer.parseInt(lines[2]);
 			int yellowHighLimit = Integer.parseInt(lines[3]);
 			int yellowLowLimit = Integer.parseInt(lines[4]);
@@ -71,27 +86,36 @@ public class AlertMessageService {
 
 			telemetryDataList.add(telemetryData);
 		}
+		// Validate input data is from 2 unique Satellites
+		int[] uniqueSatelliteIds = numberOfUniqueIntegers(satelliteIds);
+
+		this.uniqueSatelliteIds = uniqueSatelliteIds;
+
+		if (uniqueSatelliteIds.length != 2) {
+			System.err.println("Invalid input data must be from two unique satellites");
+			System.exit(0);
+		}
 		return telemetryDataList;
 	}
 
 	// Generate out bound violation messages for each satellite
 	public List<List<TelemetryData>> generateViolationsMessages(List<TelemetryData> telemetryData) {
 
-		// Create two seperate lists for each satellite of type telemetry data
+		// Create two separate lists for each satellite of type telemetry data
 		List<TelemetryData> satelliteOneList = new ArrayList<TelemetryData>();
 		List<TelemetryData> satelliteTwoList = new ArrayList<TelemetryData>();
 
 		// Satellite one violations
-		List<TelemetryData> satelliteOneLowViolations = new ArrayList<TelemetryData>(); // size zero
-		List<TelemetryData> satelliteOneHighViolations = new ArrayList<TelemetryData>(); // size zero
+		List<TelemetryData> satelliteOneLowViolations = new ArrayList<TelemetryData>();
+		List<TelemetryData> satelliteOneHighViolations = new ArrayList<TelemetryData>();
 
 		// Satellite two violations
-		List<TelemetryData> satelliteTwoLowViolations = new ArrayList<TelemetryData>(); // size 3
-		List<TelemetryData> satelliteTwoHighViolations = new ArrayList<TelemetryData>(); // size 3
+		List<TelemetryData> satelliteTwoLowViolations = new ArrayList<TelemetryData>();
+		List<TelemetryData> satelliteTwoHighViolations = new ArrayList<TelemetryData>();
 
 		for (int i = 0; i < telemetryData.size(); i++) {
 			int satelliteId = telemetryData.get(i).getSatelliteId();
-			if (satelliteId == 1001) {
+			if (satelliteId == this.uniqueSatelliteIds[0]) {
 				satelliteOneList.add(telemetryData.get(i));
 			} else {
 				satelliteTwoList.add(telemetryData.get(i));
@@ -122,8 +146,8 @@ public class AlertMessageService {
 		List<List<TelemetryData>> violationsList = new ArrayList<List<TelemetryData>>();
 		violationsList.add(satelliteOneLowViolations);
 		violationsList.add(satelliteOneHighViolations);
-		violationsList.add(satelliteTwoHighViolations);
 		violationsList.add(satelliteTwoLowViolations);
+		violationsList.add(satelliteTwoHighViolations);
 
 		return violationsList;
 	}
@@ -154,7 +178,7 @@ public class AlertMessageService {
 				jsonObjectSatelliteOneLow.put("satelliteId", violationsLists.get(0).get(i).getSatelliteId());
 				jsonObjectSatelliteOneLow.put("severity", "RED LOW");
 				jsonObjectSatelliteOneLow.put("component", violationsLists.get(0).get(i).getComponent());
-				jsonObjectSatelliteOneLow.put("timestamp", violationsLists.get(0).get(i).getTimestamp());
+				jsonObjectSatelliteOneLow.put("timestamp", utils.customTimeStampFormat(violationsLists.get(0).get(i).getTimestamp()));
 
 				jsonArray.put(jsonObjectSatelliteOneLow);
 
@@ -166,41 +190,21 @@ public class AlertMessageService {
 		for (int i = 0; i < violationsLists.get(1).size(); i++) {
 			timestamps.add(violationsLists.get(1).get(i).getTimestamp());
 		}
+
 		double timeIntervalOfViolationOneHigh = utils.getViolationTimeInterval(timestamps);
 
 		if (satelliteOneHighViolationsCount >= 3 && timeIntervalOfViolationOneHigh < 5) {
 			for (int i = 0; i < 1; i++) {
 
 				jsonObjectSatelliteOneHigh.put("satelliteId", violationsLists.get(1).get(i).getSatelliteId());
-				jsonObjectSatelliteOneHigh.put("severity", "Red HIGH");
+				jsonObjectSatelliteOneHigh.put("severity", "RED HIGH");
 				jsonObjectSatelliteOneHigh.put("component", violationsLists.get(1).get(i).getComponent());
-				jsonObjectSatelliteOneHigh.put("timestamp", violationsLists.get(1).get(i).getTimestamp());
+				jsonObjectSatelliteOneHigh.put("timestamp", utils.customTimeStampFormat(violationsLists.get(1).get(i).getTimestamp()));
 
 				jsonArray.put(jsonObjectSatelliteOneHigh);
 			}
 		} else {
 			jsonObjectSatelliteOneHigh = null;
-		}
-
-		for (int i = 0; i < violationsLists.get(2).size(); i++) {
-			timestamps.add(violationsLists.get(2).get(i).getTimestamp());
-		}
-		double timeIntervalOfSatTwoLowViolations = utils.getViolationTimeInterval(timestamps);
-
-		if (satelliteTwoLowViolationsCount >= 3 && timeIntervalOfSatTwoLowViolations < 5) {
-			for (int i = 0; i < 1; i++) {
-
-				jsonObjectSatelliteTwoLow.put("satelliteId", violationsLists.get(2).get(i).getSatelliteId());
-				jsonObjectSatelliteTwoLow.put("severity", "RED HIGH");
-				jsonObjectSatelliteTwoLow.put("component", violationsLists.get(2).get(i).getComponent());
-				jsonObjectSatelliteTwoLow.put("timestamp",
-
-						utils.customTimeStampFormat(violationsLists.get(2).get(i).getTimestamp()));
-
-				jsonArray.put(jsonObjectSatelliteTwoLow);
-			}
-		} else {
-			jsonObjectSatelliteTwoLow = null;
 		}
 
 		for (int i = 0; i < violationsLists.get(3).size(); i++) {
@@ -213,11 +217,9 @@ public class AlertMessageService {
 			for (int i = 0; i < 1; i++) {
 
 				jsonObjectSatelliteTwoHigh.put("satelliteId", violationsLists.get(3).get(i).getSatelliteId());
-				jsonObjectSatelliteTwoHigh.put("severity", "RED LOW");
+				jsonObjectSatelliteTwoHigh.put("severity", "RED HIGH");
 				jsonObjectSatelliteTwoHigh.put("component", violationsLists.get(3).get(i).getComponent());
-				jsonObjectSatelliteTwoHigh.put("timestamp",
-
-						utils.customTimeStampFormat(violationsLists.get(3).get(i).getTimestamp()));
+				jsonObjectSatelliteTwoHigh.put("timestamp", utils.customTimeStampFormat(violationsLists.get(3).get(i).getTimestamp()));
 
 				jsonArray.put(jsonObjectSatelliteTwoHigh);
 
@@ -226,10 +228,29 @@ public class AlertMessageService {
 			jsonObjectSatelliteTwoHigh = null;
 		}
 
+		for (int i = 0; i < violationsLists.get(2).size(); i++) {
+			timestamps.add(violationsLists.get(2).get(i).getTimestamp());
+		}
+		double timeIntervalOfSatTwoLowViolations = utils.getViolationTimeInterval(timestamps);
+
+		if (satelliteTwoLowViolationsCount >= 3 && timeIntervalOfSatTwoLowViolations < 5) {
+			for (int i = 0; i < 1; i++) {
+
+				jsonObjectSatelliteTwoLow.put("satelliteId", violationsLists.get(2).get(i).getSatelliteId());
+				jsonObjectSatelliteTwoLow.put("severity", "RED LOW");
+				jsonObjectSatelliteTwoLow.put("component", violationsLists.get(2).get(i).getComponent());
+				jsonObjectSatelliteTwoLow.put("timestamp", utils.customTimeStampFormat(violationsLists.get(2).get(i).getTimestamp()));
+
+				jsonArray.put(jsonObjectSatelliteTwoLow);
+			}
+		} else {
+			jsonObjectSatelliteTwoLow = null;
+		}
+
 		// Sort JSON properties
 		String finalJSON = utils.sortJSONProperties(jsonArray);
 		// Prints the final JSON to the console as a String
-		 System.out.println(finalJSON);
+		System.out.println(finalJSON);
 
 		// Find relative path. Has to work on repository servers
 		File currentDir = new File("");
@@ -237,8 +258,8 @@ public class AlertMessageService {
 		String outputPath = currentDirString + "/output/Alert Messages.json";
 		outputPath = outputPath.replaceAll("\\\\", "/");
 
-		// Write json file to the output folder
-		//Refresh the project to view the output file called "Alert Messages.json"
+		// Write JSON file to the output folder
+		// Refresh the project to view the output file called "Alert Messages.json"
 		try {
 			FileWriter jSONfile = new FileWriter(outputPath);
 			jSONfile.write(finalJSON);
@@ -248,5 +269,11 @@ public class AlertMessageService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static int[] numberOfUniqueIntegers(int[] numberOfSatellites) {
+		IntStream satelliteIdsIntStream = Arrays.stream(numberOfSatellites).distinct();
+		int[] satelliteIds = satelliteIdsIntStream.toArray();
+		return satelliteIds;
 	}
 }

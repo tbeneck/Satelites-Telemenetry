@@ -12,8 +12,10 @@ public class Utils {
 		public double getViolationTimeInterval(List<String> timeStampsList) {
 			double max = 0.00;
 			double min = 0.00;
-
+			
 			ArrayList<Double> numericValue = new ArrayList<Double>();
+			
+			if(timeStampsList.size() != 0) {
 			for (int i = 0; i < timeStampsList.size(); i++) {
 				String timestamp = timeStampsList.get(i);
 				String newTimestamp = timestamp.substring(8, 14).replace(':', '.');
@@ -22,11 +24,11 @@ public class Utils {
 			}
 			max = Collections.max(numericValue);
 			min = Collections.min(numericValue);
-
+			}
+			
 			double timeIntervalOfViolation = (max - min);
-
+			
 			return timeIntervalOfViolation;
-
 		}
 
 		// Format timestamp
@@ -45,7 +47,6 @@ public class Utils {
 
 		// Sort JSON in order satelliteId, severity, component, timestamp
 		public String sortJSONProperties(JSONArray myJsonArray) {
-
 			String satelliteId = null;
 			String severity = null;
 			String component = null;
@@ -65,11 +66,6 @@ public class Utils {
 
 				finalFormat += format;
 			}
-			//prints final JSON to the console
-			//System.out.println(finalFormat.substring(0, finalFormat.trim().length() - 1) + "\n]");
-
 			return finalFormat = finalFormat.substring(0, finalFormat.trim().length() - 1) + "\n]";
-
 		}
-
 }

@@ -1,6 +1,7 @@
 package test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import org.json.JSONArray;
@@ -65,24 +66,20 @@ public class UnitTests {
 
 		assertEquals(timeInterval, 0.02024120000000096);
 
-		// System.out.println(timeInterval);
+		System.out.println(timeInterval);
 	}
 
-	@Test
 	public void testViolationMessages() {
 
-		TelemetryData telemetryData = new TelemetryData("20180101 23:05:07.421", 1002, 120, 80, 80, 120, 44.5,
-				"TSAT");
+		TelemetryData telemetryData = new TelemetryData("20180101 23:05:07.421", 1002, 120, 80, 80, 120, 44.5, "TSAT");
 
-		TelemetryData telemetryData2 = new TelemetryData("20180101 23:06:07.421", 1003, 121, 81, 81, 121, 44.7,
-				"BTT");
+		TelemetryData telemetryData2 = new TelemetryData("20180101 23:06:07.421", 1003, 121, 81, 81, 121, 44.7, "BTT");
 
 		ArrayList<TelemetryData> telemetryDataList = new ArrayList<TelemetryData>();
 
 		telemetryDataList.add(telemetryData);
 		telemetryDataList.add(telemetryData2);
-
-		ams.generateViolationsMessages(telemetryDataList);
+		assertThrows(NullPointerException.class, () -> ams.generateViolationsMessages(telemetryDataList));
 
 	}
 

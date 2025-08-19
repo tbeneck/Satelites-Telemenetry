@@ -18,7 +18,7 @@
 
 				<dependencies>
 					<!-- https://mvnrepository.com/artifact/org.json/json -->
-					
+
 				</dependencies>
 
 			</plugin>
@@ -33,7 +33,6 @@
 			<version>20241224</version>
 		</dependency>
 
-		
 
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
