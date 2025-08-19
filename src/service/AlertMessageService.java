@@ -36,14 +36,14 @@ public class AlertMessageService {
 		// Relative path so it is compatible on repository
 		File currentDir = new File("");
 		String currentDirString = currentDir.getAbsolutePath();
-		String path = currentDirString + "/input/input.txt";
+		//String path = currentDirString + "/telemetry input/telemetry data.txt";
 		
 			//Custom Inputs
-	//		String path = currentDirString + "/custominput/inputcustom.txt";
-	//		String path = currentDirString + "/custominput/inputcustom2.txt";
-	//		String path = currentDirString + "/custominput/inputcustom3.txt";
-	//		String path = currentDirString + "/custominput/inputcustom4.txt";
-	//		String path = currentDirString + "/custominput/inputcustom5.txt";
+			//String path = currentDirString + "/telemetry custom input/custom telemetry data.txt";
+	//		String path = currentDirString + "/telemetry custom input/custom telemetry data2.txt";
+	//		String path = currentDirString + "/telemetry custom input/custom telemetry data3.txt";
+	//	String path = currentDirString + "/telemetry custom input/custom telemetry data4.txt";
+			String path = currentDirString + "/telemetry custom input/custom telemetry data5.txt";
 
 		path = path.replaceAll("\\\\", "/");
 
@@ -255,7 +255,7 @@ public class AlertMessageService {
 		// Find relative path. Has to work on repository servers
 		File currentDir = new File("");
 		String currentDirString = currentDir.getAbsolutePath();
-		String outputPath = currentDirString + "/output/Alert Messages.json";
+		String outputPath = currentDirString + "/alert messages/alert messages.json";
 		outputPath = outputPath.replaceAll("\\\\", "/");
 
 		// Write JSON file to the output folder
